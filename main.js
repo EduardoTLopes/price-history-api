@@ -1,3 +1,5 @@
+const fs = require('fs');
+var path = require('path');
 const express = require('express');
 const app = express();
 const vision = require('@google-cloud/vision');
@@ -10,9 +12,22 @@ const client = new vision.ImageAnnotatorClient({
 // Performs label detection on the image file
 
 client
-    .textDetection('./example-receipt.jpeg')
+    .textDetection('./italian_receipt.jpeg')
     .then(results => {
-        results[0].textAnnotations.forEach(text => console.log(text.description));
+        // fs.appendFile(path.join(__dirname, 'output.txt'), `\n${JSON.stringify(results, null, 2)}`, err => {
+        //     if (err) {
+        //         console.error('file error:', err);
+        //     }
+        //     console.log('parsed content written to output.txt')
+        // });
+        const content = results[0].textAnnotations[0].description
+        fs.appendFile(path.join(__dirname, 'output.txt'), `\n${content}`, err => {
+            if (err) {
+                console.error('file error:', err);
+            }
+            console.log('parsed content written to output.txt')
+        });
+
     })
     .catch(err => {
         console.error('ERROR:', err);
