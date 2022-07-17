@@ -1,3 +1,4 @@
+// @ts-check
 const fs = require('fs');
 var path = require('path');
 const express = require('express');
