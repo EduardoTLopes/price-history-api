@@ -1,0 +1,19 @@
+name: Jest
+run-name: ${{ github.actor }} is running unit tests 🚀
+
+on:
+  pull_request:
+    types: ["opened", "edited", "reopened", "synchronize"]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+          cache: "yarn"
+      - run: yarn --frozen-lockfile
+      - run: yarn test

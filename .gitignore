@@ -1,0 +1,6 @@
+node_modules/
+.gitignore
+.elasticbeanstalk/
+coverage/
+.env
+src/google/secrets/*
