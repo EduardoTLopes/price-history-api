@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "server": "node main.js"
+    "server": "nodemon main.js --ignore output.json"
   },
   "dependencies": {
     "@google-cloud/vision": "^2.4.2",
