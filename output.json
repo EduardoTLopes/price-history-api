@@ -1,0 +1,232 @@
+{
+  "2": [
+    "BEMATECH IND E COM DE EQUIP ELETRONICOS S/A\nEstrada de Santa Candida, 263 Santa Candida\n82.630-490 Curitiba - Parana\nCNPJ:82.373.077/0001-71\nIE:10181465-30\nIMI SENTO\n03/03/2010 17:15:17 CCF:000003\nCUPOM FISCAL\nITEM CÓDIGO DESCRIÇÃO QTD.UN. VL_UNIT (R$) ST VL_\nITEM(R$)\n001 7898422745547 SHAMPOO SEDA ANTI SPONGE 350M\n1,001 UN X 6,616\nT27,00%\ndesconto\n003 7891528032276\n30.009UN X 1.143\nTOTAL R$\nDinheiro\n-0,20\n002 7898422747244 SABONETE DOVE HID. FRESCA 756\n19.993UN X 1.327\nN1\nacréscimo\n+0.01\nUF:PR\nFB5504272F5049A95AB13836342F76AF\nNome VENDA AO CONSUMIDOR\nNota CF\nC00:000006\n5 Usu 43 Caixa C004018\nBEMATECH\nVERSÃO:01.00.01\n00000000000QQWQREI\nFAB EMULADOR\n20,549\nCREME DENT. SORRISO 706 R\nT07,00%\n34.30g\n67,26\n67.26\nMP-2100 TH FI\n6.62g\n6,42\nECF-IF\nECF:001 LJ:0001\n03/03/2010 17:21:08\nBR",
+    "BEMATECH",
+    "IND",
+    "E",
+    "COM",
+    "DE",
+    "EQUIP",
+    "ELETRONICOS",
+    "S",
+    "/",
+    "A"
+  ],
+  "13": [
+    "Estrada",
+    "de",
+    "Santa",
+    "Candida",
+    ",",
+    "263",
+    "Santa",
+    "Candida"
+  ],
+  "24": [
+    "82.630-490",
+    "Curitiba",
+    "-",
+    "Parana"
+  ],
+  "35": [
+    "CNPJ",
+    ":",
+    "82.373.077",
+    "/",
+    "0001-71"
+  ],
+  "46": [
+    "IE",
+    ":",
+    "10181465-30"
+  ],
+  "47": [
+    "UF",
+    ":",
+    "PR"
+  ],
+  "58": [
+    "IMI",
+    "SENTO"
+  ],
+  "79": [
+    "03/03/2010",
+    "17:15:17",
+    "CCF",
+    ":",
+    "000003",
+    "C00",
+    ":",
+    "000006"
+  ],
+  "105": [
+    "CUPOM",
+    "FISCAL"
+  ],
+  "124": [
+    "ITEM",
+    "CÓDIGO",
+    "DESCRIÇÃO",
+    "QTD.UN.",
+    "VL_UNIT"
+  ],
+  "125": [
+    "(",
+    "R",
+    "$",
+    ")",
+    "ST",
+    "VL_"
+  ],
+  "136": [
+    "ITEM",
+    "(",
+    "R",
+    "$",
+    ")"
+  ],
+  "159": [
+    "001",
+    "7898422745547",
+    "SHAMPOO",
+    "SEDA",
+    "ANTI",
+    "SPONGE",
+    "350M"
+  ],
+  "170": [
+    "1,001",
+    "UN",
+    "X",
+    "6,616",
+    "T27,00",
+    "%"
+  ],
+  "171": [
+    "6.62g"
+  ],
+  "180": [
+    "desconto"
+  ],
+  "181": [
+    "-0,20"
+  ],
+  "182": [
+    "6,42"
+  ],
+  "192": [
+    "002",
+    "7898422747244",
+    "SABONETE",
+    "DOVE",
+    "HID",
+    ".",
+    "FRESCA",
+    "756"
+  ],
+  "203": [
+    "19.993UN",
+    "X",
+    "1.327"
+  ],
+  "204": [
+    "N1"
+  ],
+  "214": [
+    "+0.01",
+    "20,549"
+  ],
+  "215": [
+    "acréscimo"
+  ],
+  "226": [
+    "003",
+    "7891528032276",
+    "CREME",
+    "DENT",
+    ".",
+    "SORRISO",
+    "706",
+    "R"
+  ],
+  "237": [
+    "T07,00",
+    "%"
+  ],
+  "238": [
+    "30.009UN",
+    "X",
+    "1.143",
+    "34.30g"
+  ],
+  "248": [
+    "TOTAL",
+    "R",
+    "$",
+    "67,26"
+  ],
+  "259": [
+    "Dinheiro"
+  ],
+  "260": [
+    "67.26"
+  ],
+  "281": [
+    "FB5504272F5049A95AB13836342F76AF"
+  ],
+  "292": [
+    "Nome",
+    "VENDA",
+    "AO",
+    "CONSUMIDOR"
+  ],
+  "303": [
+    "Nota",
+    "CF",
+    "5",
+    "Usu",
+    "43",
+    "Caixa",
+    "C004018"
+  ],
+  "325": [
+    "ECF",
+    "-",
+    "IF"
+  ],
+  "326": [
+    "BEMATECH",
+    "MP",
+    "-",
+    "2100",
+    "TH",
+    "FI"
+  ],
+  "336": [
+    "VERSÃO",
+    ":",
+    "01.00.01"
+  ],
+  "337": [
+    "ECF",
+    ":",
+    "001",
+    "LJ",
+    ":",
+    "0001"
+  ],
+  "346": [
+    "17:21:08"
+  ],
+  "347": [
+    "03/03/2010"
+  ],
+  "348": [
+    "00000000000QQWQREI"
+  ],
+  "359": [
+    "FAB",
+    "EMULADOR",
+    "BR"
+  ]
+}
