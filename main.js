@@ -3,14 +3,7 @@ const fs = require("fs");
 var path = require("path");
 const express = require("express");
 const app = express();
-const vision = require("@google-cloud/vision");
-const handlebars = require("handlebars");
 const utils = require("./utils");
-
-const client = new vision.ImageAnnotatorClient({
-  keyFilename: "./APIKey.json",
-});
-
 
 utils.detectText();
 

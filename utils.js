@@ -1,3 +1,12 @@
+const fs = require("fs");
+var path = require("path");
+
+const vision = require("@google-cloud/vision");
+
+const client = new vision.ImageAnnotatorClient({
+  keyFilename: "./APIKey.json",
+});
+
 function sortByXY(array) {
   array.sort((a, b) => {
     const verticesA = a["boundingPoly"]["vertices"][0];
@@ -40,8 +49,8 @@ async function detectText() {
   // Use the await keyword to wait for the method to complete
   const results = await client.textDetection("./adidas-receipt.jpg");
 
-  const sortedoutput = utils.sortByXY(results[0].textAnnotations);
-  const outputSortedByY = utils.getDescriptionsByY(sortedoutput);
+  const sortedoutput = sortByXY(results[0].textAnnotations);
+  const outputSortedByY = getDescriptionsByY(sortedoutput);
 
   fs.writeFile(
     path.join(__dirname, "output.json"),
@@ -55,11 +64,8 @@ async function detectText() {
   );
 }
 
-
-
 module.exports = {
   sortByXY,
   getDescriptionsByY,
-  detectText
+  detectText,
 };
-
