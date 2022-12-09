@@ -51,10 +51,13 @@ async function detectText() {
 
   const sortedoutput = sortByXY(results[0].textAnnotations);
   const outputSortedByY = getDescriptionsByY(sortedoutput);
+  const firstKey = Object.keys(outputSortedByY)[0];
+  delete outputSortedByY[firstKey];
+  const groupByKeys = mergeValues(outputSortedByY, 20);
 
   fs.writeFile(
     path.join(__dirname, "output.json"),
-    JSON.stringify(outputSortedByY, null, 2),
+    JSON.stringify(groupByKeys, null, 2),
     (err) => {
       if (err) {
         console.error("file error:", err);
@@ -62,6 +65,34 @@ async function detectText() {
       console.log("parsed content written to output.json");
     }
   );
+}
+
+function mergeValues(input, range) {
+  // Convert the input object to an array of keys and values
+  const keys = Object.keys(input);
+  const values = Object.values(input);
+
+  // Initialize the result object
+  const result = {};
+
+  // Loop through the keys and values
+  for (let i = 0; i < keys.length; i++) {
+    // Convert the key to a number
+    const key = Number(keys[i]);
+    const value = values[i];
+
+    // If the key is within the range of the next key, concatenate the value
+    // of the next key to the current value and continue looping.
+    if (i < keys.length - 1 && key + range >= Number(keys[i + 1])) {
+      values[i + 1] = value.concat(values[i + 1]);
+      continue;
+    }
+
+    // If the key is not within the range of the next key, add it to the result
+    result[key] = value;
+  }
+
+  return result;
 }
 
 module.exports = {
