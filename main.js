@@ -11,27 +11,8 @@ const client = new vision.ImageAnnotatorClient({
   keyFilename: "./APIKey.json",
 });
 
-// Convert the textDetection method to be asynchronous
-async function detectText() {
-  // Use the await keyword to wait for the method to complete
-  const results = await client.textDetection("./adidas-receipt.jpg");
 
-  const sortedoutput = utils.sortByXY(results[0].textAnnotations);
-  const outputSortedByY = utils.getDescriptionsByY(sortedoutput);
-
-  fs.writeFile(
-    path.join(__dirname, "output.json"),
-    JSON.stringify(outputSortedByY, null, 2),
-    (err) => {
-      if (err) {
-        console.error("file error:", err);
-      }
-      console.log("parsed content written to output.json");
-    }
-  );
-}
-
-detectText();
+utils.detectText();
 
 // Wait for the file operations to complete before rendering the template
 setTimeout(() => {
