@@ -53,11 +53,12 @@ async function detectText() {
   const outputSortedByY = getDescriptionsByY(sortedoutput);
   const firstKey = Object.keys(outputSortedByY)[0];
   delete outputSortedByY[firstKey];
-  const groupByKeys = mergeValues(outputSortedByY, 20);
+  const groupByKeys = groupDataByKeys(outputSortedByY, 20);
+  const mergedValues = joinValues(groupByKeys);
 
   fs.writeFile(
     path.join(__dirname, "output.json"),
-    JSON.stringify(groupByKeys, null, 2),
+    JSON.stringify(mergedValues, null, 2),
     (err) => {
       if (err) {
         console.error("file error:", err);
@@ -67,7 +68,23 @@ async function detectText() {
   );
 }
 
-function mergeValues(input, range) {
+function joinValues(obj) {
+  const result = {};
+
+  for (const key of Object.keys(obj)) {
+    const value = obj[key];
+
+    if (Array.isArray(value)) {
+      result[key] = value.join(" ");
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+function groupDataByKeys(input, range) {
   // Convert the input object to an array of keys and values
   const keys = Object.keys(input);
   const values = Object.values(input);
