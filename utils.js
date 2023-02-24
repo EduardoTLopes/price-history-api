@@ -8,25 +8,44 @@ const client = new vision.ImageAnnotatorClient({
   keyFilename: "./APIKey.json",
 });
 
+
+/**
+ * @typedef { Awaited<ReturnType<typeof client.textDetection>>[number]["textAnnotations"] } TextAnnotations
+ */
+
+
+/**
+ * @param {TextAnnotations} array
+ */
 function sortByXY(array) {
-  array.sort((a, b) => {
-    const verticesA = a["boundingPoly"]["vertices"][0];
-    const verticesB = b["boundingPoly"]["vertices"][0];
-    const x1 = verticesA["x"];
-    const y1 = verticesA["y"];
-    const x2 = verticesB["x"];
-    const y2 = verticesB["y"];
+  if (array) {
+    array.sort((a, b) => {
+      const x = a["boundingPoly"]
 
-    if (x1 === x2) {
-      return y1 - y2;
-    } else {
-      return x1 - x2;
-    }
-  });
+      const verticesA = a["boundingPoly"]?.vertices?.[0];
+      const verticesB = b["boundingPoly"]?.vertices?.[0];
+      const x1 = verticesA?.x ?? 0;
+      const y1 = verticesA?.y ?? 0;
+      const x2 = verticesB?.x ?? 0;
+      const y2 = verticesB?.y ?? 0;
 
-  return array;
+      if (x1 === x2) {
+        return y1 - y2;
+      } else {
+        return x1 - x2;
+      }
+    });
+
+    return array;
+  } else {
+    return []
+  }
+
 }
 
+/**
+ * @param {Array<Record<string, any>>} array
+ */
 function getDescriptionsByY(array) {
   const descriptionsByY = new Map();
 
@@ -50,7 +69,6 @@ function getDescriptionsByY(array) {
 async function detectText() {
   // Use the await keyword to wait for the method to complete
   const results = await client.textDetection("./adidas-receipt.jpg");
-
   const sortedoutput = sortByXY(results[0].textAnnotations);
   const outputSortedByY = getDescriptionsByY(sortedoutput);
   const firstKey = Object.keys(outputSortedByY)[0];
@@ -60,7 +78,9 @@ async function detectText() {
   return joinValues(groupByKeys);
 }
 
-
+/**
+ * @param {unknown} content - content that should be written in file
+ */
 function writeToFile(content) {
   fs.writeFile(
     path.join(__dirname, "output.json"),
