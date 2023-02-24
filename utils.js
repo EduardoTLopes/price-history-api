@@ -1,3 +1,4 @@
+//@ts-check
 const fs = require("fs");
 var path = require("path");
 
@@ -44,6 +45,7 @@ function getDescriptionsByY(array) {
   return Object.fromEntries(descriptionsByY);
 }
 
+
 // Convert the textDetection method to be asynchronous
 async function detectText() {
   // Use the await keyword to wait for the method to complete
@@ -54,11 +56,15 @@ async function detectText() {
   const firstKey = Object.keys(outputSortedByY)[0];
   delete outputSortedByY[firstKey];
   const groupByKeys = groupDataByKeys(outputSortedByY, 20);
-  const mergedValues = joinValues(groupByKeys);
 
+  return joinValues(groupByKeys);
+}
+
+
+function writeToFile(content) {
   fs.writeFile(
     path.join(__dirname, "output.json"),
-    JSON.stringify(mergedValues, null, 2),
+    JSON.stringify(content, null, 2),
     (err) => {
       if (err) {
         console.error("file error:", err);
@@ -113,7 +119,6 @@ function groupDataByKeys(input, range) {
 }
 
 module.exports = {
-  sortByXY,
-  getDescriptionsByY,
   detectText,
+  writeToFile
 };

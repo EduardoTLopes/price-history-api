@@ -5,7 +5,11 @@ const express = require("express");
 const app = express();
 const utils = require("./utils");
 
-utils.detectText();
+utils.detectText().then((x) => {
+  console.log({x})
+  utils.writeToFile(x)
+});
+
 
 // Wait for the file operations to complete before rendering the template
 setTimeout(() => {
@@ -15,5 +19,5 @@ setTimeout(() => {
   app.listen(5000, "127.0.0.1", () =>
     console.log("Server running on port 5000")
   );
-}, 1000);
+}, 3000);
 
