@@ -4,8 +4,9 @@ var path = require("path");
 const express = require("express");
 const app = express();
 const utils = require("./utils");
+const italianReceipt = "./receipts/italian_receipt.jpeg";
 
-utils.detectText().then((x) => {
+utils.detectText(italianReceipt).then((x) => {
   console.log({x})
   utils.writeToFile(x)
 });

@@ -14,6 +14,7 @@ const client = new vision.ImageAnnotatorClient({
  */
 
 
+
 /**
  * @param {TextAnnotations} array
  */
@@ -66,11 +67,15 @@ function getDescriptionsByY(array) {
 
 
 // Convert the textDetection method to be asynchronous
-async function detectText() {
+/**
+ * @param {string} filePath
+ */
+
+async function detectText(filePath) {
   // Use the await keyword to wait for the method to complete
-  const results = await client.textDetection("./adidas-receipt.jpg");
-  const sortedoutput = sortByXY(results[0].textAnnotations);
-  const outputSortedByY = getDescriptionsByY(sortedoutput);
+  const results = await client.textDetection(filePath);
+  const sortedOutput = sortByXY(results[0].textAnnotations);
+  const outputSortedByY = getDescriptionsByY(sortedOutput);
   const firstKey = Object.keys(outputSortedByY)[0];
   delete outputSortedByY[firstKey];
   const groupByKeys = groupDataByKeys(outputSortedByY, 20);
