@@ -4,7 +4,7 @@ const mockBrazilianAdidasGoogleVision = require('./google_vision_mock1')
 const mockItalianGoogleVision = require('./google_vision_mock2')
 // const mockGoogleVision3 = require('./google_vision_mock3')
 const expectedOutput = require('./output_example')
-// const expectedOutput = require('./output_example2')
+const expectedOutput2 = require('./output_example2')
 // const expectedOutput = require('./output_example3')
 const utils = require("../utils");
 
@@ -16,7 +16,7 @@ jest.mock("@google-cloud/vision", () => {
   return {
     ImageAnnotatorClient: jest.fn().mockImplementation(() => {
       return {
-        textDetection: jest.fn().mockResolvedValue((receiptName) => {
+        textDetection: jest.fn().mockImplementation(async (receiptName) => {
           switch (receiptName) {
             case brazilianAdidasReceipt:
               return mockBrazilianAdidasGoogleVision
@@ -42,7 +42,7 @@ describe('#detectText', () => {
 
     test('outputs the correct data ', async () => {
 
-      expect(await utils.detectText(italianReceipt)).toEqual(expectedOutput);
+      expect(await utils.detectText(italianReceipt)).toEqual(expectedOutput2);
     });
   })
 });

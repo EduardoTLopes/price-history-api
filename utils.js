@@ -79,7 +79,6 @@ async function detectText(filePath) {
   const firstKey = Object.keys(outputSortedByY)[0];
   delete outputSortedByY[firstKey];
   const groupByKeys = groupDataByKeys(outputSortedByY, 20);
-
   return joinValues(groupByKeys);
 }
 
