@@ -1,10 +1,12 @@
 // @ts-check
+require('dotenv').config()
 const fs = require("fs");
 var path = require("path");
 const express = require("express");
 const app = express();
 const utils = require("./utils");
 const italianReceipt = "./receipts/italian_receipt.jpeg";
+
 
 utils.detectText(italianReceipt).then((x) => {
   console.log({x})
@@ -20,5 +22,5 @@ setTimeout(() => {
   app.listen(5000, "127.0.0.1", () =>
     console.log("Server running on port 5000")
   );
-}, 3000);
+}, 500);
 
