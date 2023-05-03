@@ -9,7 +9,7 @@ async function getData(data) {
   model: "text-davinci-003",
   prompt: `based on this JSON: ${JSON.stringify(data)} return the total value of the receipts in the following format: R$ 10,00. The response should be no different than just the currency and the value.`,
   temperature: 0,
-  max_tokens: 7,
+  max_tokens: 10,
   })
   return completion
 }

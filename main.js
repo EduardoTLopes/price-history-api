@@ -1,26 +1,36 @@
 // @ts-check
-require('dotenv').config()
+require('dotenv').config();
 const fs = require("fs");
-var path = require("path");
+const path = require("path");
 const express = require("express");
 const app = express();
 const utils = require("./utils");
 const italianReceipt = "./receipts/italian_receipt.jpeg";
+const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
 
+async function processReceipt() {
+  try {
+    const extractedText = await utils.detectText(brazilianReceipt);
+    console.log({ extractedText });
+    await utils.writeToFile(extractedText);
+    return extractedText;
+  } catch (error) {
+    console.error("Error processing receipt:", error);
+    return null;
+  }
+}
 
-utils.detectText(italianReceipt).then((x) => {
-  console.log({x})
-  utils.writeToFile(x)
-});
+async function startServer() {
+  const outputData = await processReceipt();
+  if (outputData) {
+    app.get("/", (req, res) => res.send(outputData));
 
+    app.listen(5000, "127.0.0.1", () =>
+      console.log("Server running on port 5000")
+    );
+  } else {
+    console.error("Unable to start server: Error processing receipt");
+  }
+}
 
-// Wait for the file operations to complete before rendering the template
-setTimeout(() => {
-  const outputData = JSON.parse(fs.readFileSync("output.json", "utf-8"));
-  app.get("/", (req, res) => res.send(outputData));
-
-  app.listen(5000, "127.0.0.1", () =>
-    console.log("Server running on port 5000")
-  );
-}, 500);
-
+startServer();

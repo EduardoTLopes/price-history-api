@@ -73,31 +73,40 @@ function getDescriptionsByY(array) {
  */
 
 async function detectText(filePath) {
-  // Use the await keyword to wait for the method to complete
-  const results = await client.textDetection(filePath);
-  const sortedOutput = sortByXY(results[0].textAnnotations);
-  const outputSortedByY = getDescriptionsByY(sortedOutput);
-  const firstKey = Object.keys(outputSortedByY)[0];
-  delete outputSortedByY[firstKey];
-  const groupByKeys = groupDataByKeys(outputSortedByY, 20);
-  const joinedValues = joinValues(groupByKeys);
-  return getTotal(joinedValues);
+  try {
+    const results = await client.textDetection(filePath);
+    const sortedOutput = sortByXY(results[0].textAnnotations);
+    const outputSortedByY = getDescriptionsByY(sortedOutput);
+    const firstKey = Object.keys(outputSortedByY)[0];
+    delete outputSortedByY[firstKey];
+    const groupByKeys = groupDataByKeys(outputSortedByY, 20);
+    const joinedValues = joinValues(groupByKeys);
+    return getTotal(joinedValues);
+  } catch (error) {
+    console.error("Error in detectText:", error);
+    return null;
+  }
 }
 
 /**
  * @param {unknown} content - content that should be written in file
  */
 function writeToFile(content) {
-  fs.writeFile(
-    path.join(__dirname, "output.json"),
-    JSON.stringify(content, null, 2),
-    (err) => {
-      if (err) {
-        console.error("file error:", err);
+  return new Promise((resolve, reject) => {
+    fs.writeFile(
+      path.join(__dirname, "output.json"),
+      JSON.stringify(content, null, 2),
+      (err) => {
+        if (err) {
+          console.error("file error:", err);
+          reject(err);
+        } else {
+          console.log("parsed content written to output.json");
+          resolve();
+        }
       }
-      console.log("parsed content written to output.json");
-    }
-  );
+    );
+  });
 }
 
 /**
@@ -152,9 +161,14 @@ function groupDataByKeys(input, range) {
  * @param {Record<string, string>} parsedReceipt
  */
 async function getTotal(parsedReceipt) {
-  const AIData = await getData(parsedReceipt)
-  const textResponse = AIData.data.choices[0].text
-  return textResponse?.replace(/\n/g, '')
+  try {
+    const AIData = await getData(parsedReceipt);
+    const textResponse = AIData.data.choices[0].text;
+    return textResponse?.replace(/\n/g, '');
+  } catch (error) {
+    console.error("Error in getTotal:", error);
+    return null;
+  }
 }
 
 module.exports = {
