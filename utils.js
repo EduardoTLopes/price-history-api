@@ -1,6 +1,9 @@
 //@ts-check
 const fs = require("fs");
 var path = require("path");
+const axios = require('axios');
+
+const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
 
 const vision = require("@google-cloud/vision");
 const { getData } = require("./src/openai");
@@ -102,7 +105,7 @@ function writeToFile(content) {
           reject(err);
         } else {
           console.log("parsed content written to output.json");
-          resolve();
+          resolve(true);
         }
       }
     );
@@ -171,8 +174,44 @@ async function getTotal(parsedReceipt) {
   }
 }
 
+async function processReceipt(img) {
+  try {
+    const extractedText = await detectText(img || brazilianReceipt);
+    await writeToFile(extractedText);
+    return extractedText;
+  } catch (error) {
+    console.error("Error processing receipt:", error);
+    return null;
+  }
+}
+
+async function downloadImage(url, localPath) {
+  try {
+  const path2 = path.resolve(localPath)
+  const writer = fs.createWriteStream(path2)
+
+  const response = await axios({
+    url,
+    method: 'GET',
+    responseType: 'stream'
+  })
+
+  response.data.pipe(writer)
+
+  console.log(`Image saved to ${localPath}`);
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve)
+    writer.on('error', reject)
+  })
+  } catch (error) {
+    console.error('Error downloading image:', error);
+  }
+}
+
 module.exports = {
   detectText,
   writeToFile,
-  getTotal
+  getTotal,
+  processReceipt,
+  downloadImage
 };
