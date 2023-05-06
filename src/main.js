@@ -2,14 +2,12 @@
 require('dotenv').config();
 const express = require("express");
 const app = express();
-// const { startupBot } = require("./telegram/index");
-const {addRow} = require('./google/sheets')
+const { startupBot } = require("./telegram/index");
 
 async function startup() {
-  // startupBot();
+  startupBot();
 
   app.get("/", (req, res) => {
-    addRow()
     return res.send("Hello world")
   });
 

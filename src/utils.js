@@ -8,8 +8,9 @@ const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
 const vision = require("@google-cloud/vision");
 const { getData } = require("./openai");
 
+// TODO: mover pra pasta Google
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "./GoogleApiKeySecrets.json",
+  keyFilename: "./src/google/secrets/GoogleApiKeySecrets.json",
 });
 
 
