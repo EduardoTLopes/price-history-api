@@ -17,8 +17,6 @@ const client = new vision.ImageAnnotatorClient({
  * @typedef { Awaited<ReturnType<typeof client.textDetection>>[number]["textAnnotations"] } TextAnnotations
  */
 
-
-
 /**
  * @param {TextAnnotations} array
  */
@@ -199,12 +197,14 @@ async function downloadImage(url, localPath) {
   response.data.pipe(writer)
 
   console.log(`Image saved to ${localPath}`);
+
   return new Promise((resolve, reject) => {
     writer.on('finish', resolve)
     writer.on('error', reject)
   })
   } catch (error) {
     console.error('Error downloading image:', error);
+    throw error;
   }
 }
 
