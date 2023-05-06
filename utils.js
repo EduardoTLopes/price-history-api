@@ -9,7 +9,7 @@ const vision = require("@google-cloud/vision");
 const { getData } = require("./src/openai");
 
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "./APIKey.json",
+  keyFilename: "./GoogleApiKeySecrets.json",
 });
 
 
