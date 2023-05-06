@@ -90,26 +90,7 @@ async function detectText(filePath) {
   }
 }
 
-/**
- * @param {unknown} content - content that should be written in file
- */
-function writeToFile(content) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      path.join(__dirname, "output.json"),
-      JSON.stringify(content, null, 2),
-      (err) => {
-        if (err) {
-          console.error("file error:", err);
-          reject(err);
-        } else {
-          console.log("parsed content written to output.json");
-          resolve(true);
-        }
-      }
-    );
-  });
-}
+
 
 /**
  * @param {Record<string, string>} obj
@@ -175,9 +156,7 @@ async function getTotal(parsedReceipt) {
 
 async function processReceipt(img) {
   try {
-    const extractedText = await detectText(img || brazilianReceipt);
-    await writeToFile(extractedText);
-    return extractedText;
+    return await detectText(img);
   } catch (error) {
     console.error("Error processing receipt:", error);
     return null;
@@ -211,7 +190,6 @@ async function downloadImage(url, localPath) {
 
 module.exports = {
   detectText,
-  writeToFile,
   getTotal,
   processReceipt,
   downloadImage
