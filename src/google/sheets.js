@@ -3,7 +3,7 @@ const { auth } = require('./auth');
 
 async function addRow() {
   const client = await auth.getClient();
-  const sheets = google.sheets({version: 'v4', client});
+  const sheets = google.sheets({version: 'v4', auth: client});
   const spreadsheetId = '1Zl_9Lh71yGLmFAua53gYXcAFjf7gMTkH6i84XMjW-wU';
   const range = 'Sheet1!A1:D1'; // The range where you want to add the row
   const valueInputOption = 'USER_ENTERED'; // How the input data should be interpreted
