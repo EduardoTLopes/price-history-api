@@ -6,7 +6,7 @@ const axios = require('axios');
 const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
 
 const vision = require("@google-cloud/vision");
-const { getData } = require("./src/openai");
+const { getData } = require("./openai");
 
 const client = new vision.ImageAnnotatorClient({
   keyFilename: "./GoogleApiKeySecrets.json",

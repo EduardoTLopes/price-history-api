@@ -3,5 +3,4 @@ node_modules/
 .elasticbeanstalk/
 coverage/
 .env
-GoogleApiKeySecrets.json
-GoogleWebClientSecrets.json
+src/google/secrets/*
