@@ -112,7 +112,7 @@ async function addRow(userId, values) {
       insertDataOption,
       resource,
     });
-    console.log(`${response.data.updates.updatedCells} cells appended.`);
+
     return true
   } catch (error) {
     if (error instanceof GaxiosError) {
