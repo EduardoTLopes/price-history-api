@@ -6,7 +6,7 @@ const axios = require('axios');
 const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
 
 const vision = require("@google-cloud/vision");
-const { getData } = require("./openai");
+const { readReceipt } = require("./openai");
 
 // TODO: mover pra pasta Google
 const client = new vision.ImageAnnotatorClient({
@@ -145,7 +145,7 @@ function groupDataByKeys(input, range) {
  */
 async function getTotal(parsedReceipt) {
   try {
-    const AIData = await getData(parsedReceipt);
+    const AIData = await readReceipt(parsedReceipt);
     const textResponse = AIData.data.choices[0].text;
     return textResponse?.replace(/\n/g, '');
   } catch (error) {
@@ -175,8 +175,6 @@ async function downloadImage(url, localPath) {
   })
 
   response.data.pipe(writer)
-
-  console.log(`Image saved to ${localPath}`);
 
   return new Promise((resolve, reject) => {
     writer.on('finish', resolve)
