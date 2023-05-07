@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "nodemon src/main.js --ignore output.json",
+    "start": "nodemon src/main.js",
     "test": "jest"
   },
   "dependencies": {
