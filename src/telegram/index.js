@@ -49,6 +49,7 @@ function startupBot() {
           const appendSuccess = await addRow(user.id, [result])
 
           if (appendSuccess) {
+            // TODO: supply link to the spreadsheet
             bot.sendMessage(msg.chat.id, `Order total successfully added to DB.`);
           } else {
             bot.sendMessage(msg.chat.id, `Failed to add order total to DB.`);
