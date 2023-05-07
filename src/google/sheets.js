@@ -1,9 +1,14 @@
 // @ts-check
-const { google } = require('googleapis');
+const { google, sheets_v4 } = require('googleapis');
+const { GaxiosError } = require('googleapis-common');
 const { auth } = require('./auth');
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID ?? '';
-
+/**
+ *
+ * @param {number} userId telegram user id
+ * @returns {Promise<string|null>} `sheetName` if found, `null` if sheet is not found
+ */
 async function getUserSheet(userId) {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: 'v4', auth: client }); // if we don't want to copy-pasta
@@ -16,20 +21,24 @@ async function getUserSheet(userId) {
     ranges: [sheetName],
   };
   try {
-    // TODO: isso aqui nao da throw mesmo se a sheetName nao existir. Vamos precisar fazer o filter na mao....
-    // ou olhar direto na doc do Google.
-    const spreadsheetResponse = await sheets.spreadsheets.get({ spreadsheetId: SPREADSHEET_ID });
-    const x = spreadsheetResponse.data.sheets
+    await sheets.spreadsheets.get(request);
 
-    console.log(`found sheets: ${JSON.stringify(x,null,2)}`)
-    return x
+    return sheetName
   } catch (error) {
-    console.error(error)
+    if (error instanceof GaxiosError) {
+      console.error(`Failed to get user sheet: `, JSON.stringify(error.response?.data.error,null,2))
+    } else {
+      console.error(`Failed to get user sheet: `, error)
+    }
     return null
   }
 }
 
-
+/**
+ *
+ * @param {number} userId telegram user id
+ * @returns {Promise<string>} `sheetName`
+ */
 async function createUserSheet(userId) {
   const sheetName = `${userId}`;
   const client = await auth.getClient();
@@ -37,9 +46,12 @@ async function createUserSheet(userId) {
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
 
+  /**
+   * @type {sheets_v4.Params$Resource$Spreadsheets$Batchupdate}
+   */
   const request = {
-    SPREADSHEET_ID,
-    resource: {
+    spreadsheetId: SPREADSHEET_ID,
+    requestBody: {
       requests: [
         {
           addSheet: { properties: { title: sheetName } },
@@ -48,15 +60,16 @@ async function createUserSheet(userId) {
     },
   };
 
-  const response = await sheets.spreadsheets.batchUpdate(request);
+  await sheets.spreadsheets.batchUpdate(request);
   console.log(`sheet "${sheetName}" created`)
-  return response
+  return sheetName
 }
 
 /**
  *
  * @param {number} userId telegram user id
  * @param {[string]} values data to be appended
+ * @returns {Promise<boolean>} whether the operation was successful
  */
 async function addRow(userId, values) {
   const client = await auth.getClient();
@@ -69,7 +82,7 @@ async function addRow(userId, values) {
   };
 
   try {
-    /** Pendente investigacao: em vez de precisar dar um "getSheet" antes de fazer o append, acho que seria
+    /** TODO: em vez de precisar dar um "getSheet" antes de fazer o append, acho que seria
     * melhor tentar fazer o append direto e dar um "catch" caso a sheet nao exista...
     * mas nao sei se a error message do google vem bonita, ou seja, nao sei se contém a mensagem
     * "operacao falhou pq o sheet nao existe".
@@ -89,9 +102,8 @@ async function addRow(userId, values) {
     * entao acho que vai dar bom.
     */
     const userSheet = await getUserSheet(userId) ?? await createUserSheet(userId)
-    // const range = `${userId}!A1:D1`; // <<<<< Mesmo que seja um unico valor,
-    // talvez precisemos passar um range assim (isso funcionou quando eu tava testando coisa hard-coded)
-    const range = `${userId}!A1`; // The range where you want to add the row
+    const range = `${userSheet}!A1`; // Add data in the first column and the first available row
+
 
     const response = await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
@@ -101,8 +113,14 @@ async function addRow(userId, values) {
       resource,
     });
     console.log(`${response.data.updates.updatedCells} cells appended.`);
+    return true
   } catch (error) {
-    console.error(error);
+    if (error instanceof GaxiosError) {
+      console.error(`Failed to add row:\n  ${JSON.stringify(error.response?.data.error, null,2)}`);
+    } else {
+      console.error(`Failed to add row:\n  `, error);
+    }
+    return false
   }
 }
 

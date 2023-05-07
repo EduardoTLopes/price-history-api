@@ -36,7 +36,6 @@ function startupBot() {
 
     if (msg.photo) {
       try {
-
         const fileId = msg.photo[msg.photo.length - 1].file_id;
         const file = await bot.getFile(fileId);
         const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_TOKEN}/${file.file_path}`;
@@ -45,11 +44,15 @@ function startupBot() {
         const result = await utils.processReceipt('../../receipts');
 
         if (result) {
-          bot.sendMessage(msg.chat.id, `O valor total da nota é: ${result}.\n Salvando resultado no banco de dados...`);
+          bot.sendMessage(msg.chat.id, `Order total is: ${result}.\n Saving result into the database...`);
 
-          await addRow(user.id, [result])
+          const appendSuccess = await addRow(user.id, [result])
 
-          bot.sendMessage(msg.chat.id, `Valor adicionado ao DB com sucesso.`);
+          if (appendSuccess) {
+            bot.sendMessage(msg.chat.id, `Order total successfully added to DB.`);
+          } else {
+            bot.sendMessage(msg.chat.id, `Failed to add order total to DB.`);
+          }
         } else {
           handleError(msg.chat.id, 'Unable to process the image.');
         }
