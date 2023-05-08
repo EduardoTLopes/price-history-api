@@ -3,3 +3,4 @@ node_modules/
 .elasticbeanstalk/
 coverage/
 .env
+src/google/secrets/*

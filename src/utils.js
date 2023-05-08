@@ -6,10 +6,11 @@ const axios = require('axios');
 const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
 
 const vision = require("@google-cloud/vision");
-const { getData } = require("./src/openai");
+const { readReceipt } = require("./openai");
 
+// TODO: mover pra pasta Google
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "./APIKey.json",
+  keyFilename: "./src/google/secrets/GoogleApiKeySecrets.json",
 });
 
 
@@ -89,26 +90,7 @@ async function detectText(filePath) {
   }
 }
 
-/**
- * @param {unknown} content - content that should be written in file
- */
-function writeToFile(content) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(
-      path.join(__dirname, "output.json"),
-      JSON.stringify(content, null, 2),
-      (err) => {
-        if (err) {
-          console.error("file error:", err);
-          reject(err);
-        } else {
-          console.log("parsed content written to output.json");
-          resolve(true);
-        }
-      }
-    );
-  });
-}
+
 
 /**
  * @param {Record<string, string>} obj
@@ -163,7 +145,7 @@ function groupDataByKeys(input, range) {
  */
 async function getTotal(parsedReceipt) {
   try {
-    const AIData = await getData(parsedReceipt);
+    const AIData = await readReceipt(parsedReceipt);
     const textResponse = AIData.data.choices[0].text;
     return textResponse?.replace(/\n/g, '');
   } catch (error) {
@@ -174,9 +156,7 @@ async function getTotal(parsedReceipt) {
 
 async function processReceipt(img) {
   try {
-    const extractedText = await detectText(img || brazilianReceipt);
-    await writeToFile(extractedText);
-    return extractedText;
+    return await detectText(img);
   } catch (error) {
     console.error("Error processing receipt:", error);
     return null;
@@ -196,8 +176,6 @@ async function downloadImage(url, localPath) {
 
   response.data.pipe(writer)
 
-  console.log(`Image saved to ${localPath}`);
-
   return new Promise((resolve, reject) => {
     writer.on('finish', resolve)
     writer.on('error', reject)
@@ -210,7 +188,6 @@ async function downloadImage(url, localPath) {
 
 module.exports = {
   detectText,
-  writeToFile,
   getTotal,
   processReceipt,
   downloadImage

@@ -2,7 +2,7 @@
 require('dotenv').config();
 const express = require("express");
 const app = express();
-const { startupBot } = require("./src/telegram/index");
+const { startupBot } = require("./telegram/index");
 
 async function startup() {
   startupBot();
