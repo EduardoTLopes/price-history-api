@@ -4,6 +4,19 @@ const { GaxiosError } = require('googleapis-common');
 const { auth } = require('./auth');
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID ?? '';
+
+function buildErrorMessage(message, error) {
+  if (error instanceof GaxiosError) {
+    if (error.response?.data.error) {
+      return `${message}${JSON.stringify(error.response?.data.error, null, 2)}`
+    } else if(error.response) {
+      return `${message}statusCode: ${error.response.status} ${error.response.statusText}`
+    }
+  }
+
+  return `${message}${error}`
+}
+
 /**
  *
  * @param {number} userId telegram user id
@@ -25,11 +38,7 @@ async function getUserSheet(userId) {
 
     return sheetName
   } catch (error) {
-    if (error instanceof GaxiosError) {
-      console.error(`Failed to get user sheet: `, JSON.stringify(error.response?.data.error,null,2))
-    } else {
-      console.error(`Failed to get user sheet: `, error)
-    }
+    console.error(buildErrorMessage(`Failed to get user sheet: `, error))
     return null
   }
 }
@@ -115,11 +124,7 @@ async function addRow(userId, values) {
 
     return true
   } catch (error) {
-    if (error instanceof GaxiosError) {
-      console.error(`Failed to add row:\n  ${JSON.stringify(error.response?.data.error, null,2)}`);
-    } else {
-      console.error(`Failed to add row:\n  `, error);
-    }
+    console.error(buildErrorMessage(`Failed to add row: `, error))
     return false
   }
 }
