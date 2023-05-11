@@ -2,7 +2,6 @@ import fs from "fs";
 import path from "path";
 import axios from 'axios';
 
-import type { google } from "@google-cloud/vision"
 import vision from "@google-cloud/vision";
 import { readReceipt } from "./openai";
 
@@ -38,7 +37,7 @@ function sortByXY(array: TextAnnotations) {
 
 }
 
-function getDescriptionsByY(array: NonNullable<TextAnnotations>): Record<string, unknown> {
+function getDescriptionsByY(array: NonNullable<TextAnnotations>): Record<string, string> {
   const descriptionsByY = new Map();
 
   for (const obj of array) {
@@ -62,18 +61,18 @@ function getDescriptionsByY(array: NonNullable<TextAnnotations>): Record<string,
 }
 
 
-async function detectText(filePath: string) {
+export async function detectText(filePath: string) {
   try {
     const results = await client.textDetection(filePath);
     const sortedOutput = sortByXY(results[0].textAnnotations);
     const outputSortedByY = getDescriptionsByY(sortedOutput);
     const firstKey = Object.keys(outputSortedByY)[0];
-    delete outputSortedByY[firstKey];
+    delete outputSortedByY[firstKey!];
     const groupByKeys = groupDataByKeys(outputSortedByY, 20);
     const joinedValues = joinValues(groupByKeys);
     return getTotal(joinedValues);
   } catch (error) {
-    console.error("Error in detectText:", error);
+    console.error("Error in detectText: ", error);
     return null;
   }
 }
@@ -81,56 +80,63 @@ async function detectText(filePath: string) {
 
 
 function joinValues(obj: Record<string, string>): Record<string, string> | {} {
-  const result = {};
+  const result: Record<string, string> = {};
 
-  for (const key of Object.keys(obj)) {
-    const value = obj[key];
+  try {
+    for (const key of Object.keys(obj)) {
+      const value = obj[key]!;
 
-    if (Array.isArray(value)) {
-      result[key] = value.join(" ");
-    } else {
-      result[key] = value;
+      if (Array.isArray(value)) {
+        result[key] = value.join(" ");
+      } else {
+        result[key] = value;
+      }
     }
+  } catch(e) {
+    console.error(`Error in joinValues: ${e}`)
   }
 
   return result;
 }
 
-function groupDataByKeys(input, range) {
+function groupDataByKeys(input: Record<string,string>, range: number) {
   // Convert the input object to an array of keys and values
   const keys = Object.keys(input);
   const values = Object.values(input);
 
   // Initialize the result object
-  const result = {};
+  const result: Record<string,string> = {};
 
-  // Loop through the keys and values
-  for (let i = 0; i < keys.length; i++) {
-    // Convert the key to a number
-    const key = Number(keys[i]);
-    const value = values[i];
+  try {
 
-    // If the key is within the range of the next key, concatenate the value
-    // of the next key to the current value and continue looping.
-    if (i < keys.length - 1 && key + range >= Number(keys[i + 1])) {
-      values[i + 1] = value.concat(values[i + 1]);
-      continue;
+    // Loop through the keys and values
+    for (let i = 0; i < keys.length; i++) {
+      // Convert the key to a number
+      const key = Number(keys[i]);
+      const value = values[i]!;
+
+      // If the key is within the range of the next key, concatenate the value
+      // of the next key to the current value and continue looping.
+      if (i < keys.length - 1 && key + range >= Number(keys[i + 1])) {
+        values[i + 1] = value.concat(values[i + 1]!);
+        continue;
+      }
+
+      // If the key is not within the range of the next key, add it to the result
+      result[key] = value;
     }
-
-    // If the key is not within the range of the next key, add it to the result
-    result[key] = value;
+  } catch (e) {
+    console.error("Error in groupDataByKeys: ", e);
   }
 
   return result;
 }
 
-/**
- * @param {Record<string, string>} parsedReceipt
- */
-async function getTotal(parsedReceipt: Record<string, string>) {
+export async function getTotal(parsedReceipt: Record<string, string>) {
   try {
     const AIData = await readReceipt(parsedReceipt);
-    const textResponse = AIData.data.choices[0].text;
+    const textResponse = AIData.data.choices?.[0]?.text
+
     return textResponse?.replace(/\n/g, '');
   } catch (error) {
     console.error("Error in getTotal:", error);
@@ -138,16 +144,16 @@ async function getTotal(parsedReceipt: Record<string, string>) {
   }
 }
 
-async function processReceipt(img) {
+export async function processReceipt(imagePath: string) {
   try {
-    return await detectText(img);
+    return await detectText(imagePath);
   } catch (error) {
     console.error("Error processing receipt:", error);
     return null;
   }
 }
 
-async function downloadImage(url, localPath) {
+export async function downloadImage(url: string, localPath: string) {
   try {
   const path2 = path.resolve(localPath)
   const writer = fs.createWriteStream(path2)
@@ -170,9 +176,3 @@ async function downloadImage(url, localPath) {
   }
 }
 
-module.exports = {
-  detectText,
-  getTotal,
-  processReceipt,
-  downloadImage
-};
