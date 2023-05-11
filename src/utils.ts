@@ -92,20 +92,20 @@ function joinValues(obj: Record<string, string>): Record<string, string> | {} {
         result[key] = value;
       }
     }
-  } catch(e) {
+  } catch (e) {
     console.error(`Error in joinValues: ${e}`)
   }
 
   return result;
 }
 
-function groupDataByKeys(input: Record<string,string>, range: number) {
+function groupDataByKeys(input: Record<string, string>, range: number) {
   // Convert the input object to an array of keys and values
   const keys = Object.keys(input);
   const values = Object.values(input);
 
   // Initialize the result object
-  const result: Record<string,string> = {};
+  const result: Record<string, string> = {};
 
   try {
 
@@ -155,21 +155,21 @@ export async function processReceipt(imagePath: string) {
 
 export async function downloadImage(url: string, localPath: string) {
   try {
-  const path2 = path.resolve(localPath)
-  const writer = fs.createWriteStream(path2)
+    const path2 = path.resolve(localPath)
+    const writer = fs.createWriteStream(path2)
 
-  const response = await axios({
-    url,
-    method: 'GET',
-    responseType: 'stream'
-  })
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream'
+    })
 
-  response.data.pipe(writer)
+    response.data.pipe(writer)
 
-  return new Promise((resolve, reject) => {
-    writer.on('finish', resolve)
-    writer.on('error', reject)
-  })
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
+    })
   } catch (error) {
     console.error('Error downloading image:', error);
     throw error;
