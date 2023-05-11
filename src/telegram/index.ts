@@ -5,12 +5,7 @@ import { addRow } from '../google/sheets';
 
 export const bot = new TelegramBot(process.env.TELEGRAM_TOKEN ?? '', { polling: true });
 
-/**
- * @param {number} chatId
- * @param {string} errorMessage
- * @returns {void}
- */
-function handleError(chatId, errorMessage) {
+function handleError(chatId: number, errorMessage: string): void {
   bot.sendMessage(chatId, `ERROR: ${errorMessage}`);
   console.error(errorMessage);
 }
@@ -35,7 +30,7 @@ export function startupBot() {
 
     if (msg.photo) {
       try {
-        const fileId = msg.photo[msg.photo.length - 1].file_id;
+        const fileId = msg.photo.at(- 1)!.file_id;
         const file = await bot.getFile(fileId);
         const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_TOKEN}/${file.file_path}`;
         await downloadImage(fileUrl, '../../receipts');
@@ -58,6 +53,7 @@ export function startupBot() {
           handleError(msg.chat.id, 'Unable to process the image.');
         }
       } catch (error) {
+        console.error(`Failed to handle photo message: ${error}`)
         handleError(msg.chat.id, 'Unable to process the image.');
       }
     }
