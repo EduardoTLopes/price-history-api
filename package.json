@@ -21,6 +21,11 @@
     "openai": "^3.2.1"
   },
   "devDependencies": {
-    "jest": "^29.4.3"
+    "@jest/globals": "^29.5.0",
+    "@types/express": "^4.17.17",
+    "@types/node-telegram-bot-api": "^0.61.6",
+    "jest": "^29.4.3",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.4"
   }
 }
