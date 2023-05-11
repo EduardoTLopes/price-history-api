@@ -46,7 +46,8 @@ function startupBot() {
         if (result) {
           bot.sendMessage(msg.chat.id, `Order total is: ${result}.\n Saving result into the database...`);
 
-          const appendSuccess = await addRow(user.id, [result])
+          const currentDate = new Date().toLocaleDateString('pt-BR');
+          const appendSuccess = await addRow(user.id, [currentDate, result])
 
           if (appendSuccess) {
             // TODO: supply link to the spreadsheet
