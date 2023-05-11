@@ -1,12 +1,10 @@
-//@ts-check
-const fs = require("fs");
-var path = require("path");
-const axios = require('axios');
+import fs from "fs";
+import path from "path";
+import axios from 'axios';
 
-const brazilianReceipt = "./receipts/brazilian-adidas-receipt.jpg";
-
-const vision = require("@google-cloud/vision");
-const { readReceipt } = require("./openai");
+import type { google } from "@google-cloud/vision"
+import vision from "@google-cloud/vision";
+import { readReceipt } from "./openai";
 
 // TODO: mover pra pasta Google
 const client = new vision.ImageAnnotatorClient({
@@ -14,18 +12,11 @@ const client = new vision.ImageAnnotatorClient({
 });
 
 
-/**
- * @typedef { Awaited<ReturnType<typeof client.textDetection>>[number]["textAnnotations"] } TextAnnotations
- */
+type TextAnnotations = Awaited<ReturnType<typeof client.textDetection>>[number]["textAnnotations"];
 
-/**
- * @param {TextAnnotations} array
- */
-function sortByXY(array) {
+function sortByXY(array: TextAnnotations) {
   if (array) {
     array.sort((a, b) => {
-      const x = a["boundingPoly"]
-
       const verticesA = a["boundingPoly"]?.vertices?.[0];
       const verticesB = b["boundingPoly"]?.vertices?.[0];
       const x1 = verticesA?.x ?? 0;
@@ -47,14 +38,16 @@ function sortByXY(array) {
 
 }
 
-/**
- * @param {Array<Record<string, any>>} array
- */
-function getDescriptionsByY(array) {
+function getDescriptionsByY(array: NonNullable<TextAnnotations>): Record<string, unknown> {
   const descriptionsByY = new Map();
 
   for (const obj of array) {
-    const vertices = obj["boundingPoly"]["vertices"][0];
+    const vertices = obj.boundingPoly?.vertices?.[0];
+
+    if (!vertices) {
+      break
+    }
+
     const y = vertices["y"];
     const description = obj["description"];
 
@@ -69,12 +62,7 @@ function getDescriptionsByY(array) {
 }
 
 
-// Convert the textDetection method to be asynchronous
-/**
- * @param {string} filePath
- */
-
-async function detectText(filePath) {
+async function detectText(filePath: string) {
   try {
     const results = await client.textDetection(filePath);
     const sortedOutput = sortByXY(results[0].textAnnotations);
@@ -92,11 +80,7 @@ async function detectText(filePath) {
 
 
 
-/**
- * @param {Record<string, string>} obj
- * @return {Record<string, string> | {}}
- */
-function joinValues(obj) {
+function joinValues(obj: Record<string, string>): Record<string, string> | {} {
   const result = {};
 
   for (const key of Object.keys(obj)) {
@@ -143,7 +127,7 @@ function groupDataByKeys(input, range) {
 /**
  * @param {Record<string, string>} parsedReceipt
  */
-async function getTotal(parsedReceipt) {
+async function getTotal(parsedReceipt: Record<string, string>) {
   try {
     const AIData = await readReceipt(parsedReceipt);
     const textResponse = AIData.data.choices[0].text;

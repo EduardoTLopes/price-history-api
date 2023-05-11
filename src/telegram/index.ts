@@ -1,10 +1,9 @@
-// @ts-check
-const TelegramBot = require('node-telegram-bot-api');
-const utils = require("../utils");
-const { addRow } = require('../google/sheets');
+import TelegramBot from 'node-telegram-bot-api';
+import { downloadImage, processReceipt } from "../utils";
+import { addRow } from '../google/sheets';
 
 
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN ?? '', { polling: true });
+export const bot = new TelegramBot(process.env.TELEGRAM_TOKEN ?? '', { polling: true });
 
 /**
  * @param {number} chatId
@@ -16,7 +15,7 @@ function handleError(chatId, errorMessage) {
   console.error(errorMessage);
 }
 
-function startupBot() {
+export function startupBot() {
   console.log("Starting up bot polling...")
 
   bot.onText(/\/start/, (msg) => {
@@ -39,9 +38,9 @@ function startupBot() {
         const fileId = msg.photo[msg.photo.length - 1].file_id;
         const file = await bot.getFile(fileId);
         const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_TOKEN}/${file.file_path}`;
-        await utils.downloadImage(fileUrl, '../../receipts');
+        await downloadImage(fileUrl, '../../receipts');
 
-        const result = await utils.processReceipt('../../receipts');
+        const result = await processReceipt('../../receipts');
 
         if (result) {
           bot.sendMessage(msg.chat.id, `Order total is: ${result}.\n Saving result into the database...`);
@@ -65,5 +64,4 @@ function startupBot() {
   });
 }
 
-module.exports = {bot, startupBot};
 

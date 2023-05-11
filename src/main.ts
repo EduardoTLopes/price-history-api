@@ -1,8 +1,7 @@
-// @ts-check
 require('dotenv').config();
-const express = require("express");
+import express from "express";
 const app = express();
-const { startupBot } = require("./telegram/index");
+import { startupBot } from "./telegram/index";
 
 async function startup() {
   startupBot();
