@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   "1003": "adidas do Brasil Ltda .",
   "1065": "CNPJ : 42.274.696 / 0014-09",
   "1128": "Insc . Est .: 1170937361 Insc . Mun .: 29787130",
