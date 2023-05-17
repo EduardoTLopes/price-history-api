@@ -44,7 +44,6 @@ async function getUserSheet(userId) {
 }
 
 /**
- *
  * @param {number} userId telegram user id
  * @returns {Promise<string>} `sheetName`
  */
@@ -75,9 +74,10 @@ async function createUserSheet(userId) {
 }
 
 /**
- *
+ * @typedef {string} CurrentDate - values[0]
+ * @typedef {string} OrderTotal - values[1]
  * @param {number} userId telegram user id
- * @param {[string]} values data to be appended
+ * @param {[CurrentDate, OrderTotal]} values data to be appended
  * @returns {Promise<boolean>} whether the operation was successful
  */
 async function addRow(userId, values) {
