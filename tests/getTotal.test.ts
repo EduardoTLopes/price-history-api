@@ -10,13 +10,13 @@ describe('#getTotal', () => {
   describe('when receiving a parsed italian receipt', () => {
     test('correctly returns the total amount', async () => {
 
-      expect(await getTotal(parsedItalianReceipt)).toEqual(12.03);
+      expect(await getTotal(parsedItalianReceipt)).toEqual("R$ 12,03");
     });
   });
   describe('when receiving a parsed brazilian receipt', () => {
     test('correctly returns the total amount', async () => {
 
-      expect(await getTotal(parsedBrazilianReceipt)).toEqual(439.97);
+      expect(await getTotal(parsedBrazilianReceipt)).toEqual("R$ 439,97");
     });
   });
 })
