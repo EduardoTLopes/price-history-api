@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   '26': 'SUPERMERCATO U2',
   '69': 'S.P.A. MAXI UNES',
   '108': '87 , VALLAZZE VIA',

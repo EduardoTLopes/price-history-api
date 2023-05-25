@@ -1,15 +1,15 @@
-// @ts-check
-const { google, sheets_v4 } = require('googleapis');
-const { GaxiosError } = require('googleapis-common');
-const { auth } = require('./auth');
+import { google } from 'googleapis';
+import type { sheets_v4 } from 'googleapis';
+import { GaxiosError } from 'googleapis-common';
+import { auth } from './auth';
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID ?? '';
 
-function buildErrorMessage(message, error) {
+function buildErrorMessage(message: string, error: unknown) {
   if (error instanceof GaxiosError) {
     if (error.response?.data.error) {
       return `${message}${JSON.stringify(error.response?.data.error, null, 2)}`
-    } else if(error.response) {
+    } else if (error.response) {
       return `${message}statusCode: ${error.response.status} ${error.response.statusText}`
     }
   }
@@ -22,8 +22,10 @@ function buildErrorMessage(message, error) {
  * @param {number} userId telegram user id
  * @returns {Promise<string|null>} `sheetName` if found, `null` if sheet is not found
  */
-async function getUserSheet(userId) {
+async function getUserSheet(userId: number): Promise<string | null> {
   const client = await auth.getClient();
+  // TODO: arrumar este erro
+  // @ts-expect-error
   const sheets = google.sheets({ version: 'v4', auth: client }); // if we don't want to copy-pasta
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
@@ -47,9 +49,11 @@ async function getUserSheet(userId) {
  * @param {number} userId telegram user id
  * @returns {Promise<string>} `sheetName`
  */
-async function createUserSheet(userId) {
+async function createUserSheet(userId: number): Promise<string> {
   const sheetName = `${userId}`;
   const client = await auth.getClient();
+  // TODO: arrumar este erro
+  // @ts-expect-error
   const sheets = google.sheets({ version: 'v4', auth: client }); // if we don't want to copy-pasta
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
@@ -57,7 +61,7 @@ async function createUserSheet(userId) {
   /**
    * @type {sheets_v4.Params$Resource$Spreadsheets$Batchupdate}
    */
-  const request = {
+  const request: sheets_v4.Params$Resource$Spreadsheets$Batchupdate = {
     spreadsheetId: SPREADSHEET_ID,
     requestBody: {
       requests: [
@@ -73,16 +77,18 @@ async function createUserSheet(userId) {
   return sheetName
 }
 
+type CurrentDate = string
+type OrderTotal = string
 /**
- * @typedef {string} CurrentDate - values[0]
- * @typedef {string} OrderTotal - values[1]
- * @param {number} userId telegram user id
- * @param {[CurrentDate, OrderTotal]} values data to be appended
- * @returns {Promise<boolean>} whether the operation was successful
+ * @param userId telegram user id
+ * @param values data to be appended
+ * @returns whether the operation was successful
  */
-async function addRow(userId, values) {
+export async function addRow(userId: number, values: [CurrentDate, OrderTotal]): Promise<boolean> {
   const client = await auth.getClient();
-  const sheets = google.sheets({version: 'v4', auth: client});
+  // TODO: arrumar este erro
+  // @ts-expect-error
+  const sheets = google.sheets({ version: 'v4', auth: client });
   const valueInputOption = 'USER_ENTERED'; // How the input data should be interpreted
   const insertDataOption = 'INSERT_ROWS'; // How the new row should be added
 
@@ -114,7 +120,9 @@ async function addRow(userId, values) {
     const range = `${userSheet}!A1`; // Add data in the first column and the first available row
 
 
-    const response = await sheets.spreadsheets.values.append({
+    // TODO: arrumar este erro
+    // @ts-expect-error
+    await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range,
       valueInputOption,
@@ -128,5 +136,3 @@ async function addRow(userId, values) {
     return false
   }
 }
-
-module.exports = {addRow}

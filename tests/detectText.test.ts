@@ -1,12 +1,8 @@
-//@ts-check
-const { describe, expect, test } = require('@jest/globals');
-const mockBrazilianAdidasGoogleVision = require('./google_vision_mock1')
-const mockItalianGoogleVision = require('./google_vision_mock2')
-// const mockGoogleVision3 = require('./google_vision_mock3')
-const expectedOutput = require('./output_example')
-const expectedOutput2 = require('./output_example2')
-// const expectedOutput = require('./output_example3')
-const utils = require("../utils");
+import { jest, describe, expect, test } from '@jest/globals';
+import mockBrazilianAdidasGoogleVision from './google_vision_mock1';
+import mockItalianGoogleVision from './google_vision_mock2';
+import { detectText } from '../src/utils';
+
 
 
 const brazilianAdidasReceipt = './receipts/brazilian-adidas-receipt.jpg'
@@ -19,9 +15,11 @@ jest.mock("@google-cloud/vision", () => {
         textDetection: jest.fn().mockImplementation(async (receiptName) => {
           switch (receiptName) {
             case brazilianAdidasReceipt:
-              return mockBrazilianAdidasGoogleVision
+              return mockBrazilianAdidasGoogleVision;
             case italianReceipt:
-              return mockItalianGoogleVision
+              return mockItalianGoogleVision;
+            default:
+              return [];
           }
         }),
       };
@@ -34,7 +32,7 @@ describe('#detectText', () => {
   describe('when you provide a brazilian receipt', () => {
     test('outputs the parsed data', async () => {
 
-      expect(await utils.detectText(brazilianAdidasReceipt)).toEqual(expectedOutput);
+      expect(await detectText(brazilianAdidasReceipt)).toEqual("R$ 439,97");
     });
   });
 
@@ -42,7 +40,7 @@ describe('#detectText', () => {
 
     test('outputs the correct data ', async () => {
 
-      expect(await utils.detectText(italianReceipt)).toEqual(expectedOutput2);
+      expect(await detectText(italianReceipt)).toEqual("R$ 12,03");
     });
   })
 });

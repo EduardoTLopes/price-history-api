@@ -1,22 +1,16 @@
-// @ts-check
-const TelegramBot = require('node-telegram-bot-api');
-const utils = require("../utils");
-const { addRow } = require('../google/sheets');
+import TelegramBot from 'node-telegram-bot-api';
+import { downloadImage, processReceipt } from "../utils";
+import { addRow } from '../google/sheets';
 
 
-const bot = new TelegramBot(process.env.TELEGRAM_TOKEN ?? '', { polling: true });
+export const bot = new TelegramBot(process.env.TELEGRAM_TOKEN ?? '', { polling: true });
 
-/**
- * @param {number} chatId
- * @param {string} errorMessage
- * @returns {void}
- */
-function handleError(chatId, errorMessage) {
+function handleError(chatId: number, errorMessage: string): void {
   bot.sendMessage(chatId, `ERROR: ${errorMessage}`);
   console.error(errorMessage);
 }
 
-function startupBot() {
+export function startupBot() {
   console.log("Starting up bot polling...")
 
   bot.onText(/\/start/, (msg) => {
@@ -36,12 +30,12 @@ function startupBot() {
 
     if (msg.photo) {
       try {
-        const fileId = msg.photo[msg.photo.length - 1].file_id;
+        const fileId = msg.photo.at(- 1)!.file_id;
         const file = await bot.getFile(fileId);
         const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_TOKEN}/${file.file_path}`;
-        await utils.downloadImage(fileUrl, '../../receipts');
+        await downloadImage(fileUrl, '../../receipts');
 
-        const result = await utils.processReceipt('../../receipts');
+        const result = await processReceipt('../../receipts');
 
         if (result) {
           bot.sendMessage(msg.chat.id, `Order total is: ${result}.\n Saving result into the database...`);
@@ -59,11 +53,11 @@ function startupBot() {
           handleError(msg.chat.id, 'Unable to process the image.');
         }
       } catch (error) {
+        console.error(`Failed to handle photo message: ${error}`)
         handleError(msg.chat.id, 'Unable to process the image.');
       }
     }
   });
 }
 
-module.exports = {bot, startupBot};
 
