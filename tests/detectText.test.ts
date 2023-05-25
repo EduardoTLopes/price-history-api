@@ -27,6 +27,37 @@ jest.mock("@google-cloud/vision", () => {
   };
 });
 
+jest.mock('openai', () => {
+  return {
+    Configuration: jest.fn(),
+    OpenAIApi: jest.fn().mockImplementation(() => {
+      return {
+        createCompletion: jest.fn().mockImplementation((options: any) => {
+          if (options.prompt.includes('SUPERMERCATO U2')) {
+            return { data: {
+              choices: [{
+                text: 'R$ 12,03'
+              }]
+            }}
+          }
+          if (options.prompt.includes('adidas')) {
+            return { data: {
+              choices: [{
+                text: 'R$ 439,97'
+              }]
+            }} 
+          }
+          return { data: {
+              choices: [{
+                text: 'R$ NOT FOUND'
+              }]
+            }} 
+        })
+      };
+    })
+  };
+});
+
 
 describe('#detectText', () => {
   describe('when you provide a brazilian receipt', () => {
