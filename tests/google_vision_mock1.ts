@@ -1,4 +1,4 @@
-module.exports = [{textAnnotations:
+export default [{textAnnotations:
   [{
     locations: [
     ],
