@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Unit Tests
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 
 on:
@@ -6,7 +6,7 @@ on:
     types: ["opened", "edited", "reopened", "synchronize"]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
