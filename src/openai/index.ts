@@ -12,6 +12,5 @@ export async function readReceipt(data: unknown) {
     temperature: 0,
     max_tokens: 10,
   })
-
   return completion
 }
