@@ -7,7 +7,7 @@ import { readReceipt } from "./openai";
 
 // TODO: mover pra pasta Google
 const client = new vision.ImageAnnotatorClient({
-  keyFilename: "./src/google/secrets/GoogleApiKeySecrets.json",
+  keyFilename: "./src/google/secrets/visionSecret.json",
 });
 
 type TextAnnotations = Awaited<

@@ -1,8 +1,7 @@
-import path from "path";
 import { google } from "googleapis";
-import { authenticate } from "@google-cloud/local-auth";
 import type { sheets_v4 } from "googleapis";
 import { GaxiosError } from "googleapis-common";
+import { auth } from "./auth";
 
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID ?? "";
 
@@ -24,12 +23,13 @@ function buildErrorMessage(message: string, error: unknown) {
  * @returns {Promise<string|null>} `sheetName` if found, `null` if sheet is not found
  */
 async function getUserSheet(userId: number): Promise<string | null> {
-  const auth = await authenticate({
-    keyfilePath: path.join(__dirname, "./secrets/GoogleApiKeySecrets.json"),
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  const client = await auth.getClient();
+  // @ts-expect-error o auth do google tá doidao
+  const sheets = google.sheets({
+    version: "v4",
+    auth: client,
   });
-  google.options({ auth });
-  const sheets = google.sheets("v4"); // if we don't want to copy-pasta
+  // if we don't want to copy-pasta
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
 
@@ -50,8 +50,12 @@ async function getUserSheet(userId: number): Promise<string | null> {
 
 async function createUserSheet(userId: number): Promise<string> {
   const sheetName = `${userId}`;
-  await googleAuthenticate();
-  const sheets = google.sheets("v4"); // if we don't want to copy-pasta
+  const client = await auth.getClient();
+  // @ts-expect-error o auth do google tá doidao
+  const sheets = google.sheets({
+    version: "v4",
+    auth: client,
+  });
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
 
@@ -85,8 +89,12 @@ export async function addRow(
   userId: number,
   values: [CurrentDate, OrderTotal]
 ): Promise<boolean> {
-  await googleAuthenticate();
-  const sheets = google.sheets("v4");
+  const client = await auth.getClient();
+  // @ts-expect-error o auth do google tá doidao
+  const sheets = google.sheets({
+    version: "v4",
+    auth: client,
+  });
   const valueInputOption = "USER_ENTERED"; // How the input data should be interpreted
   const insertDataOption = "INSERT_ROWS"; // How the new row should be added
 
@@ -130,11 +138,4 @@ export async function addRow(
     console.error(buildErrorMessage("Failed to add row: ", error));
     return false;
   }
-}
-async function googleAuthenticate() {
-  const auth = await authenticate({
-    keyfilePath: path.join(__dirname, "./secrets/GoogleApiKeySecrets.json"),
-    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
-  });
-  google.options({ auth });
 }

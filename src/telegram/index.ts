@@ -34,7 +34,7 @@ export function startupBot() {
 
     if (msg.photo != null) {
       try {
-        const fileId = msg.photo.at(-1)!.file_id;
+        const fileId = msg.photo[msg.photo.length - 1]!.file_id;
         const file = await bot.getFile(fileId);
         const fileUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_TOKEN}/${file.file_path}`;
         await downloadImage(fileUrl, "../../receipts");
