@@ -1,12 +1,12 @@
-name: Tests
-run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
+name: Jest
+run-name: ${{ github.actor }} is running unit tests 🚀
 
 on:
   pull_request:
     types: ["opened", "edited", "reopened", "synchronize"]
 
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
 
     steps:
