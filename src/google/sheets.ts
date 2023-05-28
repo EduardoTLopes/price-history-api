@@ -1,21 +1,21 @@
-import path from 'path'
-import { google } from 'googleapis'
-import { authenticate } from '@google-cloud/local-auth'
-import type { sheets_v4 } from 'googleapis'
-import { GaxiosError } from 'googleapis-common'
+import path from "path";
+import { google } from "googleapis";
+import { authenticate } from "@google-cloud/local-auth";
+import type { sheets_v4 } from "googleapis";
+import { GaxiosError } from "googleapis-common";
 
-const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID ?? ''
+const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID ?? "";
 
-function buildErrorMessage (message: string, error: unknown) {
+function buildErrorMessage(message: string, error: unknown) {
   if (error instanceof GaxiosError) {
     if (error.response?.data.error) {
-      return `${message}${JSON.stringify(error.response?.data.error, null, 2)}`
+      return `${message}${JSON.stringify(error.response?.data.error, null, 2)}`;
     } else if (error.response != null) {
-      return `${message}statusCode: ${error.response.status} ${error.response.statusText}`
+      return `${message}statusCode: ${error.response.status} ${error.response.statusText}`;
     }
   }
 
-  return `${message}${error}`
+  return `${message}${error}`;
 }
 
 /**
@@ -23,36 +23,35 @@ function buildErrorMessage (message: string, error: unknown) {
  * @param {number} userId telegram user id
  * @returns {Promise<string|null>} `sheetName` if found, `null` if sheet is not found
  */
-async function getUserSheet (userId: number): Promise<string | null> {
-  
+async function getUserSheet(userId: number): Promise<string | null> {
   const auth = await authenticate({
-    keyfilePath: path.join(__dirname, './secrets/GoogleApiKeySecrets.json'),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    keyfilePath: path.join(__dirname, "./secrets/GoogleApiKeySecrets.json"),
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
-  google.options({auth});
-  const sheets = google.sheets('v4') // if we don't want to copy-pasta
+  google.options({ auth });
+  const sheets = google.sheets("v4"); // if we don't want to copy-pasta
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
 
-  const sheetName = `${userId}`
+  const sheetName = `${userId}`;
   const request = {
     spreadsheetId: SPREADSHEET_ID,
-    ranges: [sheetName]
-  }
+    ranges: [sheetName],
+  };
   try {
-    await sheets.spreadsheets.get(request)
+    await sheets.spreadsheets.get(request);
 
-    return sheetName
+    return sheetName;
   } catch (error) {
-    console.error(buildErrorMessage('Failed to get user sheet: ', error))
-    return null
+    console.error(buildErrorMessage("Failed to get user sheet: ", error));
+    return null;
   }
 }
 
-async function createUserSheet (userId: number): Promise<string> {
-  const sheetName = `${userId}`
-  await googleAuthenticate()
-  const sheets = google.sheets('v4') // if we don't want to copy-pasta
+async function createUserSheet(userId: number): Promise<string> {
+  const sheetName = `${userId}`;
+  await googleAuthenticate();
+  const sheets = google.sheets("v4"); // if we don't want to copy-pasta
   // these calls all over, we need to implement a Singleton. Vai ser interessante passar as duas funcoes
   // pro gpt e pedir pra ele resolver isso pa nois.
 
@@ -64,33 +63,36 @@ async function createUserSheet (userId: number): Promise<string> {
     requestBody: {
       requests: [
         {
-          addSheet: { properties: { title: sheetName } }
-        }
-      ]
-    }
-  }
+          addSheet: { properties: { title: sheetName } },
+        },
+      ],
+    },
+  };
 
-  await sheets.spreadsheets.batchUpdate(request)
-  console.log(`sheet "${sheetName}" created`)
-  return sheetName
+  await sheets.spreadsheets.batchUpdate(request);
+  console.log(`sheet "${sheetName}" created`);
+  return sheetName;
 }
 
-type CurrentDate = string
-type OrderTotal = string
+type CurrentDate = string;
+type OrderTotal = string;
 /**
  * @param userId telegram user id
  * @param values data to be appended
  * @returns whether the operation was successful
  */
-export async function addRow (userId: number, values: [CurrentDate, OrderTotal]): Promise<boolean> {
-  await googleAuthenticate()
-  const sheets = google.sheets('v4')
-  const valueInputOption = 'USER_ENTERED' // How the input data should be interpreted
-  const insertDataOption = 'INSERT_ROWS' // How the new row should be added
+export async function addRow(
+  userId: number,
+  values: [CurrentDate, OrderTotal]
+): Promise<boolean> {
+  await googleAuthenticate();
+  const sheets = google.sheets("v4");
+  const valueInputOption = "USER_ENTERED"; // How the input data should be interpreted
+  const insertDataOption = "INSERT_ROWS"; // How the new row should be added
 
   const resource = {
-    values: [values]
-  }
+    values: [values],
+  };
 
   try {
     /** TODO: em vez de precisar dar um "getSheet" antes de fazer o append, acho que seria
@@ -112,27 +114,27 @@ export async function addRow (userId: number, values: [CurrentDate, OrderTotal])
     ```
     * entao acho que vai dar bom.
     */
-    const userSheet = await getUserSheet(userId) ?? await createUserSheet(userId)
-    const range = `${userSheet}!A1` // Add data in the first column and the first available row
+    const userSheet =
+      (await getUserSheet(userId)) ?? (await createUserSheet(userId));
+    const range = `${userSheet}!A1`; // Add data in the first column and the first available row
     await sheets.spreadsheets.values.append({
       spreadsheetId: SPREADSHEET_ID,
       range,
       valueInputOption,
       insertDataOption,
-      requestBody: resource
-    })
+      requestBody: resource,
+    });
 
-    return true
+    return true;
   } catch (error) {
-    console.error(buildErrorMessage('Failed to add row: ', error))
-    return false
+    console.error(buildErrorMessage("Failed to add row: ", error));
+    return false;
   }
 }
 async function googleAuthenticate() {
   const auth = await authenticate({
-    keyfilePath: path.join(__dirname, './secrets/GoogleApiKeySecrets.json'),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  })
-  google.options({ auth })
+    keyfilePath: path.join(__dirname, "./secrets/GoogleApiKeySecrets.json"),
+    scopes: ["https://www.googleapis.com/auth/spreadsheets"],
+  });
+  google.options({ auth });
 }
-
